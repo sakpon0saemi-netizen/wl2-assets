@@ -1,0 +1,16 @@
+{
+  "name": "WL2 Overburden Monitoring System",
+  "short_name": "WL2",
+  "description": "Production, contractor performance and contract compliance monitoring for the WL2 overburden conveyor system.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#4338ca",
+  "theme_color": "#4338ca",
+  "icons": [
+    { "src": "wl2-icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "wl2-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "wl2-icon.png", "sizes": "1024x1024", "type": "image/png", "purpose": "maskable" }
+  ]
+}

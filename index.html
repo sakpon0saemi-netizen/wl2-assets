@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WL2 Overburden Monitoring System</title>
+
+<!-- ======================================================================
+     วางลิงก์ /exec ของคุณตรงนี้ที่เดียว  (บรรทัด APP_URL ด้านล่างสุด)
+     ====================================================================== -->
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+
+<!-- iOS: ไอคอนหน้าโฮม + เปิดเต็มจอ -->
+<link rel="apple-touch-icon" href="wl2-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="wl2-icon.png">
+<link rel="apple-touch-icon" sizes="167x167" href="wl2-icon.png">
+<link rel="apple-touch-icon" sizes="152x152" href="wl2-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WL2">
+
+<!-- Android / Chrome -->
+<link rel="icon" type="image/png" href="wl2-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#4338ca">
+
+<style>
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#4338ca;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  #frame{position:fixed;inset:0;width:100%;height:100%;border:0;display:block}
+  #splash{position:fixed;inset:0;z-index:9;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:20px;color:#fff;
+    background:linear-gradient(135deg,#4338ca 0%,#6d28d9 45%,#0284c7 100%);
+    transition:opacity .5s ease}
+  #splash.gone{opacity:0;pointer-events:none}
+  #splash .mark{font-size:56px;font-weight:800;letter-spacing:-.04em}
+  #splash .sub{font-size:13px;opacity:.8;letter-spacing:.02em}
+  .ring{width:30px;height:30px;border:3px solid rgba(255,255,255,.28);
+    border-top-color:#a5f3fc;border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #fallback{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);z-index:10;
+    display:none;background:#fff;color:#1e1b4b;font-size:13px;font-weight:700;
+    padding:11px 20px;border-radius:999px;text-decoration:none;
+    box-shadow:0 12px 30px -12px rgba(0,0,0,.6)}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="mark">WL2</div>
+  <div class="ring"></div>
+  <div class="sub">Loading monitoring system…</div>
+</div>
+
+<iframe id="frame" title="WL2 Overburden Monitoring System"
+        allow="clipboard-write; fullscreen"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+<a id="fallback" href="#" target="_blank" rel="noopener">เปิดในเบราว์เซอร์แทน</a>
+
+<script>
+  /* ====== วางลิงก์ /exec ของคุณตรงนี้ ====== */
+  var APP_URL = "https://script.google.com/macros/s/AKfycbxuxUo31D33m0z22rVXH2vNzQV2B5t_D--Ai-W2YeWZVhtGVkyiD7wdvenje5nepvXO1A/exec";
+  /* ======================================== */
+
+  var frame = document.getElementById('frame');
+  var splash = document.getElementById('splash');
+  var fallback = document.getElementById('fallback');
+
+  fallback.href = APP_URL;
+  frame.src = APP_URL;
+
+  frame.addEventListener('load', function () {
+    setTimeout(function () { splash.classList.add('gone'); }, 400);
+  });
+
+  /* ถ้าโหลดไม่ขึ้นภายใน 12 วินาที ให้ทางออกไว้กดเปิดตรง */
+  setTimeout(function () {
+    if (!splash.classList.contains('gone')) {
+      splash.classList.add('gone');
+      fallback.style.display = 'block';
+    }
+  }, 12000);
+</script>
+</body>
+</html>
