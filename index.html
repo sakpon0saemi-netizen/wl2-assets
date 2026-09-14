@@ -4,20 +4,18 @@
 <meta charset="utf-8">
 <title>WL2 Overburden Monitoring System</title>
 
-<!-- ======================================================================
-     วางลิงก์ /exec ของคุณตรงนี้ที่เดียว  (บรรทัด APP_URL ด้านล่างสุด)
-     ====================================================================== -->
+<!-- ซูมได้แล้ว (เอา user-scalable=no ออก) -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-
-<!-- iOS: ไอคอนหน้าโฮม + เปิดเต็มจอ -->
+<!-- iOS -->
 <link rel="apple-touch-icon" href="wl2-icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="wl2-icon.png">
 <link rel="apple-touch-icon" sizes="167x167" href="wl2-icon.png">
 <link rel="apple-touch-icon" sizes="152x152" href="wl2-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- default = เนื้อหาเริ่มใต้แถบสถานะ ไม่มุดใต้นาฬิกาอีก -->
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="WL2">
 
 <!-- Android / Chrome -->
@@ -26,16 +24,16 @@
 <meta name="theme-color" content="#4338ca">
 
 <style>
-  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#4338ca;
+  html,body{margin:0;padding:0;height:100%;background:#4338ca;overflow:hidden;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-  #frame{position:fixed;inset:0;width:100%;height:100%;border:0;display:block}
+  #frame{position:fixed;top:0;left:0;width:100%;height:100%;border:0;display:block}
   #splash{position:fixed;inset:0;z-index:9;display:flex;flex-direction:column;
     align-items:center;justify-content:center;gap:20px;color:#fff;
     background:linear-gradient(135deg,#4338ca 0%,#6d28d9 45%,#0284c7 100%);
     transition:opacity .5s ease}
   #splash.gone{opacity:0;pointer-events:none}
   #splash .mark{font-size:56px;font-weight:800;letter-spacing:-.04em}
-  #splash .sub{font-size:13px;opacity:.8;letter-spacing:.02em}
+  #splash .sub{font-size:13px;opacity:.8}
   .ring{width:30px;height:30px;border:3px solid rgba(255,255,255,.28);
     border-top-color:#a5f3fc;border-radius:50%;animation:spin 1s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
@@ -64,9 +62,9 @@
   var APP_URL = "https://script.google.com/macros/s/AKfycbxuxUo31D33m0z22rVXH2vNzQV2B5t_D--Ai-W2YeWZVhtGVkyiD7wdvenje5nepvXO1A/exec";
   /* ======================================== */
 
-  var frame = document.getElementById('frame');
-  var splash = document.getElementById('splash');
-  var fallback = document.getElementById('fallback');
+  var frame = document.getElementById('frame'),
+      splash = document.getElementById('splash'),
+      fallback = document.getElementById('fallback');
 
   fallback.href = APP_URL;
   frame.src = APP_URL;
@@ -74,14 +72,35 @@
   frame.addEventListener('load', function () {
     setTimeout(function () { splash.classList.add('gone'); }, 400);
   });
-
-  /* ถ้าโหลดไม่ขึ้นภายใน 12 วินาที ให้ทางออกไว้กดเปิดตรง */
   setTimeout(function () {
     if (!splash.classList.contains('gone')) {
       splash.classList.add('gone');
       fallback.style.display = 'block';
     }
   }, 12000);
+
+  /* ==================================================================
+     สะพานเก็บ token
+     Safari ไม่ยอมให้หน้าที่อยู่ใน iframe เก็บข้อมูลลงเครื่อง
+     หน้านี้เป็นหน้านอกสุดจึงเก็บแทนให้ แล้วส่งกลับเข้าไปเมื่อถูกขอ
+     ================================================================== */
+  var KEY = 'wl2_token';
+  window.addEventListener('message', function (e) {
+    var d = e.data;
+    if (!d || d.__wl2 !== 1 || !d.op) return;
+    var src = e.source;
+    function reply(payload) {
+      payload.__wl2 = 1; payload.id = d.id;
+      try { src.postMessage(payload, '*'); } catch (err) {}
+    }
+    try {
+      if (d.op === 'get')         reply({ value: localStorage.getItem(KEY) || '' });
+      else if (d.op === 'set')    { localStorage.setItem(KEY, d.value || ''); reply({ ok:true }); }
+      else if (d.op === 'clear')  { localStorage.removeItem(KEY); reply({ ok:true }); }
+      else if (d.op === 'reload') { reply({ ok:true }); location.reload(); }
+      else reply({ ok:false });
+    } catch (err) { reply({ error:String(err) }); }
+  }, false);
 </script>
 </body>
 </html>
